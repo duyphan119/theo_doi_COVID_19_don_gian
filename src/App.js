@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { getCountries, getDayOneAllStatus } from "./api";
+import ContriesSelect from "./components/ContriesSelect";
+import LineChart from "./components/LineChart";
+import SummaryCards from "./components/SummaryCards";
 
 function App() {
+  const [countries, setCountries] = useState([]);
+  const [slug, setSlug] = useState("vietnam");
+  const [summary, setSummary] = useState({});
+  useEffect(() => {
+    getCountries().then((res) => {
+      setCountries(res.data);
+    });
+  }, []);
+  useEffect(() => {
+    getDayOneAllStatus(slug).then((res) => {
+      setSummary(res.data);
+    });
+  }, [slug]);
+  const handleSelectCountry = (sl) => {
+    setSlug(sl);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ContriesSelect
+        countries={countries}
+        onSelectCountry={(c) => handleSelectCountry(c)}
+        slug={slug}
+      />
+      <SummaryCards summary={summary} />
+      <LineChart summary={summary}/>
     </div>
   );
 }
